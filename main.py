@@ -1,18 +1,34 @@
+#!/usr/bin/env python3
+
 import tkinter as tk
 import requests
 import random
 import time
 
+# Variabile globale per memorizzare l'ultimo prezzo noto del Bitcoin
+last_known_price = 50000
+
 # Funzione per ottenere il prezzo di Bitcoin dall'API 
 def get_btc_price():
+    global last_known_price
     api_url = 'https://api.coindesk.com/v1/bpi/currentprice.json'
-    response = requests.get(api_url)
-    data = response.json()
-    return data['bpi']['USD']['rate_float']
+    try:
+        response = requests.get(api_url, timeout=5)
+        data = response.json()
+        last_known_price = data['bpi']['USD']['rate_float']
+    except requests.RequestException as e:
+        print(f"Errore durante la richiesta del prezzo del Bitcoin: {e}")
+        if last_known_price is None:
+            # Se non abbiamo un ultimo prezzo noto, scegliere di visualizzare un messaggio o un valore predefinito
+            return "N/D"
+    return last_known_price
 
-# Funzione per aggiornare l'interfaccia con il nuovo prezzo
+# Funzione per aggiornare l'interfaccia con il nuovo prezzo o l'ultimo prezzo noto
 def update_labels(price):
-    price_str = '{:,.2f}'.format(price).replace(',', '')
+    if price == "N/D":
+        price_str = price
+    else:
+        price_str = '{:,.2f}'.format(price).replace(',', '')
     digits = [d if d == ',' else int(d) for d in price_str]
     for label, digit in zip(labels[1:], digits):  # Inizia da 1 per saltare il simbolo del dollaro
         label.config(text=str(digit))
