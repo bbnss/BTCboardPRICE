@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Exec=python3 /home/percorso/del/tuo/file/main.py
+Hidden=false
+NoDisplay=false
+X-GNOME-Autostart-enabled=true
+Name=BTCboardPRICE
+Comment=Python app that show Bitcoin Price
